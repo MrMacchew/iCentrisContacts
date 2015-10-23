@@ -1,10 +1,15 @@
 class ContactsController < ApplicationController
-  before_action :set_contact, only: [:new, :show, :edit, :update, :destroy]
+  before_action :set_contact, only: [:show, :edit, :update, :destroy]
 
   # GET /contacts
   # GET /contacts.json
   def index
-    @contacts = Contact.all
+    if current_user
+      @contacts = current_user.contacts
+      @contact = Contact.new
+    else
+      redirect_to '/log_in'
+    end
   end
 
   # GET /contacts/1
@@ -14,7 +19,11 @@ class ContactsController < ApplicationController
 
   # GET /contacts/new
   def new
-    @contact = Contact.new
+    if current_user
+      @contact = Contact.new(:user_id => current_user.id)
+    else
+      redirect_to '/log_in'
+    end
   end
 
   # GET /contacts/1/edit
@@ -25,6 +34,7 @@ class ContactsController < ApplicationController
   # POST /contacts.json
   def create
     @contact = Contact.new(contact_params)
+    @contact.user_id = current_user.id
 
     respond_to do |format|
       if @contact.save
@@ -34,6 +44,7 @@ class ContactsController < ApplicationController
         format.html { render :new }
         format.json { render json: @contact.errors, status: :unprocessable_entity }
       end
+      format.js
     end
   end
 
@@ -56,10 +67,12 @@ class ContactsController < ApplicationController
   def destroy
     @contact.destroy
     respond_to do |format|
-      format.html { redirect_to contacts_url, notice: 'Contact was successfully destroyed.' }
-      format.json { head :no_content }
+      format.js
     end
   end
+
+      #format.html { redirect_to contacts_url, notice: 'Contact was successfully destroyed.' }
+      #format.json { head :no_content }
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -69,6 +82,6 @@ class ContactsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def contact_params
-      params.require(:contact).permit(:name, :phone, :email, :address)
+      params.require(:contact).permit(:name, :phone, :email, :address,:user_id)
     end
 end
