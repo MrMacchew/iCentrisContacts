@@ -1,8 +1,8 @@
 <p id="notice"><%= notice %></p>
 
-<h1>iCentris Address Book</h1>
+<h1><%= image_tag("icentrislogo.png") %> Address Book</h1>
 
-<table>
+<table id='contacts'>
   <thead>
     <tr>
       <th>Name</th>
@@ -19,5 +19,8 @@
 </table>
 
 <br>
+<button data-toggle="collapse" data-target="#newContact">New Contact</button>
 
-<%= render 'form' %>
+<div id="newContact" class="collapse well">
+				<%= render 'form' %>
+</div>
